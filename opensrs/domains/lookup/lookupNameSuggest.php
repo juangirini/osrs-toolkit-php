@@ -59,6 +59,8 @@ class lookupNameSuggest extends openSRS_base {
 		if (isSet($this->_dataObject->data->alllkdomains) && $this->_dataObject->data->alllkdomains != "") $arralkAll = explode (";", $this->_dataObject->data->alllkdomains);
 
 
+		$services = (isSet($this->_dataObject->data->services) && $this->_dataObject->data->services != "")?explode (";", $this->_dataObject->data->services):["lookup","suggestion"];
+
                 // If Name Suggestion Choices Empty
 		if (count($arransSelected) == 0) {
 			if (count($arransAll) == 0){
@@ -83,7 +85,7 @@ class lookupNameSuggest extends openSRS_base {
 
 		// Call function
 		if ($allPassed) {
-			$resObject = $this->_domainTLD ($domain, $arransCall, $arralkCall);
+			$resObject = $this->_domainTLD ($domain, $arransCall, $arralkCall, $services);
 		} else {
 			trigger_error ("oSRS Error - Incorrect call.", E_USER_WARNING);
 		}
@@ -91,7 +93,7 @@ class lookupNameSuggest extends openSRS_base {
 
 
 	// Selected / all TLD options
-	private function _domainTLD($domain, $nstlds, $lktlds){
+	private function _domainTLD($domain, $nstlds, $lktlds, $services){
 		$cmd = array(
 			"protocol" => "XCP",
 			"action" => "name_suggest",
@@ -106,9 +108,7 @@ class lookupNameSuggest extends openSRS_base {
 						"tlds" => $nstlds
 					)
 				),
-				"services" => array(
-					"lookup","suggestion"
-				)
+				"services" => $services
 			)
 		);
 

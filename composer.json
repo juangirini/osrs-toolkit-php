@@ -1,5 +1,5 @@
 {
-    "name": "opensrs/osrs-toolkit-php",
+    "name": "juangirini/osrs-toolkit-php",
     "description": "OpenSRS PHP Toolkit",
     "license": "MIT",
     "authors": [
@@ -10,6 +10,10 @@
         {
             "name": "Kris Atkinson",
             "email": "katkinson@tucows.com"
+        },
+        {
+            "name": "Juan Girini",
+            "email": "juangirini@gmail.com"
         }
     ],
     "require": {

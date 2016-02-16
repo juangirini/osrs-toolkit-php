@@ -86,7 +86,7 @@ class lookupNameSuggest extends openSRS_base
 
         // Call function
         if ($allPassed) {
-            $resObject = $this->_domainTLD($domain, $arransCall, $arralkCall, $services, $languages);
+            $resObject = $this->_domainTLD($domain, $arransCall, $arralkCall);
         } else {
             trigger_error("oSRS Error - Incorrect call.", E_USER_WARNING);
         }

@@ -48,45 +48,45 @@ class lookupNameSuggest extends openSRS_base
             $allPassed = false;
         }
 
-        // Select non empty one
+        /*        // Select non empty one
 
-        // Name Suggestion Choice Check
-        if (isSet($this->_dataObject->data->nsselected) && $this->_dataObject->data->nsselected != "") $arransSelected = explode(";", $this->_dataObject->data->nsselected);
+                // Name Suggestion Choice Check
+                if (isSet($this->_dataObject->data->nsselected) && $this->_dataObject->data->nsselected != "") $arransSelected = explode(";", $this->_dataObject->data->nsselected);
 
-        // Lookup Choice Check
-        if (isSet($this->_dataObject->data->lkselected) && $this->_dataObject->data->lkselected != "") $arralkSelected = explode(";", $this->_dataObject->data->lkselected);
+                // Lookup Choice Check
+                if (isSet($this->_dataObject->data->lkselected) && $this->_dataObject->data->lkselected != "") $arralkSelected = explode(";", $this->_dataObject->data->lkselected);
 
-        // Get Default Name Suggestion Choices For No Form Submission
-        if (isSet($this->_dataObject->data->allnsdomains) && $this->_dataObject->data->allnsdomains != "") $arransAll = explode(";", $this->_dataObject->data->allnsdomains);
+                // Get Default Name Suggestion Choices For No Form Submission
+                if (isSet($this->_dataObject->data->allnsdomains) && $this->_dataObject->data->allnsdomains != "") $arransAll = explode(";", $this->_dataObject->data->allnsdomains);
 
-        // Get Default Lookup Choices For No Form Submission
-        if (isSet($this->_dataObject->data->alllkdomains) && $this->_dataObject->data->alllkdomains != "") $arralkAll = explode(";", $this->_dataObject->data->alllkdomains);
+                // Get Default Lookup Choices For No Form Submission
+                if (isSet($this->_dataObject->data->alllkdomains) && $this->_dataObject->data->alllkdomains != "") $arralkAll = explode(";", $this->_dataObject->data->alllkdomains);
 
-        // If Name Suggestion Choices Empty
-        if (count($arransSelected) == 0) {
-            if (count($arransAll) == 0) {
-                $arransCall = array(".com", ".net", ".org", ".info", ".biz", ".us", ".mobi");
-            } else {
-                $arransCall = $arransAll;
-            }
-        } else {
-            $arransCall = $arransSelected;
-        }
+                // If Name Suggestion Choices Empty
+                if (count($arransSelected) == 0) {
+                    if (count($arransAll) == 0) {
+                        $arransCall = array(".com", ".net", ".org", ".info", ".biz", ".us", ".mobi");
+                    } else {
+                        $arransCall = $arransAll;
+                    }
+                } else {
+                    $arransCall = $arransSelected;
+                }
 
-        // If Lookup Choices Empty
-        if (count($arralkSelected) == 0) {
-            if (count($arralkAll) == 0) {
-                $arralkCall = array(".com", ".net", ".ca", ".us", ".eu", ".de", ".co.uk");
-            } else {
-                $arralkCall = $arralkAll;
-            }
-        } else {
-            $arralkCall = $arralkSelected;
-        }
+                // If Lookup Choices Empty
+                if (count($arralkSelected) == 0) {
+                    if (count($arralkAll) == 0) {
+                        $arralkCall = array(".com", ".net", ".ca", ".us", ".eu", ".de", ".co.uk");
+                    } else {
+                        $arralkCall = $arralkAll;
+                    }
+                } else {
+                    $arralkCall = $arralkSelected;
+                }*/
 
         // Call function
         if ($allPassed) {
-            $resObject = $this->_domainTLD($domain, $arransCall, $arralkCall);
+            $resObject = $this->_domainTLD($domain);
         } else {
             trigger_error("oSRS Error - Incorrect call.", E_USER_WARNING);
         }
@@ -94,7 +94,7 @@ class lookupNameSuggest extends openSRS_base
 
 
     // Selected / all TLD options
-    private function _domainTLD($domain, $nstlds, $lktlds)
+    private function _domainTLD($domain)
     {
         $cmd = array(
             "protocol" => "XCP",
@@ -102,14 +102,14 @@ class lookupNameSuggest extends openSRS_base
             "object" => "domain",
             "attributes" => array(
                 "searchstring" => $domain,
-                "service_override" => array(
-                    "lookup" => array(
-                        "tlds" => $lktlds
-                    ),
-                    "suggestion" => array(
-                        "tlds" => $nstlds
-                    )
-                ),
+//                "service_override" => array(
+//                    "lookup" => array(
+//                        "tlds" => $lktlds
+//                    ),
+//                    "suggestion" => array(
+//                        "tlds" => $nstlds
+//                    )
+//                ),
                 "services" => ["lookup", "suggestion"]
             )
         );
@@ -122,10 +122,18 @@ class lookupNameSuggest extends openSRS_base
             $cmd['attributes']['languages'] = explode(";", $this->_dataObject->data->languages);
         }
 
-        if (isSet($this->_dataObject->data->maximum) && $this->_dataObject->data->maximum != "") {
-            $cmd['attributes']['service_override']['lookup']['maximum'] = $this->_dataObject->data->maximum;
-            $cmd['attributes']['service_override']['suggestion']['maximum'] = $this->_dataObject->data->maximum;
+        if (isSet($this->_dataObject->data->tlds) && $this->_dataObject->data->tlds != "") {
+            $cmd['attributes']['tlds'] = explode(";", $this->_dataObject->data->tlds);
         }
+
+        if (isSet($this->_dataObject->data->tlds) && $this->_dataObject->data->tlds != "") {
+            $cmd['attributes']['suggestion']['tlds'] = explode(";", $this->_dataObject->data->tlds);
+        }
+
+//        if (isSet($this->_dataObject->data->maximum) && $this->_dataObject->data->maximum != "") {
+//            $cmd['attributes']['service_override']['lookup']['maximum'] = $this->_dataObject->data->maximum;
+//            $cmd['attributes']['service_override']['suggestion']['maximum'] = $this->_dataObject->data->maximum;
+//        }
 
 
         $xmlCMD = $this->_opsHandler->encode($cmd);                    // Flip Array to XML
@@ -138,10 +146,7 @@ class lookupNameSuggest extends openSRS_base
 
         if (isSet($arrayResult['attributes'])) {
 
-            $this->resultRaw = array(
-                'lookup' => $arrayResult['attributes']['lookup']['items'],
-                'suggestion' => $arrayResult['attributes']['suggestion']['items']
-            );
+            $this->resultRaw = $arrayResult['attributes'];
 
         } else {
             $this->resultRaw = $arrayResult;

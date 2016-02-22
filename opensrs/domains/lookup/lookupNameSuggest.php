@@ -130,6 +130,18 @@ class lookupNameSuggest extends openSRS_base
             $cmd['attributes']['suggestion']['tlds'] = explode(";", $this->_dataObject->data->tlds);
         }
 
+        foreach($cmd['attributes']['services'] as $service){
+            $cmd['attributes']['service_override'][$service]["tlds"]=$cmd['attributes']['tlds'];
+            switch($service){
+                case "suggestion":
+                    $cmd['attributes']['service_override'][$service]["maximum"]=10;
+                    break;
+                case "premium":
+                    $cmd['attributes']['service_override'][$service]["maximum"]=5;
+                    break;
+            }
+        }
+
 //        if (isSet($this->_dataObject->data->maximum) && $this->_dataObject->data->maximum != "") {
 //            $cmd['attributes']['service_override']['lookup']['maximum'] = $this->_dataObject->data->maximum;
 //            $cmd['attributes']['service_override']['suggestion']['maximum'] = $this->_dataObject->data->maximum;
